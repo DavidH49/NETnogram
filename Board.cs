@@ -12,20 +12,12 @@ public class Board {
 
     private Random _rng = new();
 
-
     public bool this[int i, int j] => _board[i, j];
 
 
-    public Board(Config c, bool[,] board) {
-        _config = c;
-        this._board = board;
-
-        CheckedBoard = new bool[_config.Width, _config.Height];
-        _boardStatsCol = new int[_config.Width];
-        _boardStatsRow = new int[_config.Height];
-    }
-
-
+    /// <summary>
+    /// If only a Config is specified, the Board class generates the board by itself
+    /// </summary>
     public Board(Config c) {
         _config = c;
         
@@ -35,22 +27,48 @@ public class Board {
         _boardStatsRow = new int[_config.Height];
         
         MakeBoard();
+        NumberBoard();
     }
     
     
+    /// <summary>
+    /// If a board is specified, the Board class only manages the interaction with
+    /// and numbering of the specified board
+    /// </summary>
+    public Board(Config c, bool[,] board) {
+        _config = c;
+        this._board = board;
+
+        CheckedBoard = new bool[_config.Width, _config.Height];
+        _boardStatsCol = new int[_config.Width];
+        _boardStatsRow = new int[_config.Height];
+        
+        NumberBoard();
+    }
+
+
+    /// <summary>
+    /// Iterates through CheckedBoard,
+    /// prints how many checks are in each row and column,
+    /// prints every false as " - "
+    /// and every true as " O "
+    /// </summary>
     public void PrintBoard() {
         Console.Write("    ");
-        for (int i = 0; i < _config.Width; i++) {
+        
+        // Prints how many checks are in each column
+        for (int i = 0; i < _config.Height; i++) {
             Console.Write(_boardStatsCol[i] + "  ");
         }
         
         Console.Write("\n");
         
-        for (int i = 0; i < _config.Width; i++) {
-            Console.Write(_boardStatsRow[i] + "  ");
+        // Prints which fields of CheckedBoard are checked and how many checks there are in each row
+        for (int y = 0; y < _config.Width; y++) {
+            Console.Write(_boardStatsRow[y] + "  ");
             
-            for (int j = 0; j < _config.Height; j++) {
-                if (CheckedBoard[i, j]) {
+            for (int x = 0; x < _config.Height; x++) {
+                if (CheckedBoard[y, x]) {
                     Console.Write(" O ");
                     continue;
                 }
@@ -63,19 +81,15 @@ public class Board {
     }
     
     
+    /// <summary>
+    /// Iterates through _board,
+    /// prints every false as " - "
+    /// and every true as " O "
+    /// </summary>
     public void PrintSolvedBoard() {
-        Console.Write("    ");
-        for (int i = 0; i < _config.Width; i++) {
-            Console.Write(_boardStatsCol[i] + "  ");
-        }
-        
-        Console.Write("\n");
-        
-        for (int i = 0; i < _config.Width; i++) {
-            Console.Write(_boardStatsRow[i] + "  ");
-            
-            for (int j = 0; j < _config.Height; j++) {
-                if (_board[i, j]) {
+        for (int y = 0; y < _config.Width; y++) {
+            for (int x = 0; x < _config.Height; x++) {
+                if (_board[y, x]) {
                     Console.Write(" O ");
                     continue;
                 }
@@ -88,10 +102,15 @@ public class Board {
     }
 
 
+    /// <summary>
+    /// Checks if _board and CheckedBoard are equal
+    /// to tell if the player has solved the nonogram
+    /// </summary>
+    /// <returns></returns>
     public bool CheckBoardFinished() {
-        for (int i = 0; i < _config.Width; i++) {
-            for (int j = 0; j < _config.Height; j++) {
-                if (_board[i, j] != CheckedBoard[i, j]) return false;
+        for (int y = 0; y < _config.Width; y++) {
+            for (int x = 0; x < _config.Height; x++) {
+                if (_board[y, x] != CheckedBoard[y, x]) return false;
             }
         }
 
@@ -99,24 +118,30 @@ public class Board {
     }
     
     
+    /// <summary>
+    /// randomly sets up to _config.Checked fields in _board to true
+    /// </summary>
     private void MakeBoard() {
-        // Fill the board with nothing
-        for (int i = 0; i < _config.Width; i++) {
-            for (int j = 0; j < _config.Height; j++) {
-                _board[i, j] = false;
-            }
-        }
-        
         // Place random checks
-        for (int i = 0; i < _config.Checked; i++) {
-            int x = _rng.Next(_config.Width - 1);
-            int y = _rng.Next(_config.Height - 1);
+        for (var i = 0; i < _config.Checked; i++) {
+            var y = _rng.Next(_config.Height);
+            var x = _rng.Next(_config.Width);
 
-            if (!_board[x, y]) {
-                _board[x, y] = true;
+            _board[y, x] = true;
+        }
+    }
 
-                _boardStatsRow[x]++;
-                _boardStatsCol[y]++;
+
+    /// <summary>
+    /// Counts how many checks there are in each row and column
+    /// </summary>
+    private void NumberBoard() {
+        for (int y = 0; y < _config.Height; y++) {
+            for (int x = 0; x < _config.Width; x++) {
+                if (_board[y, x]) {
+                    _boardStatsRow[y]++;
+                    _boardStatsCol[x]++;
+                }
             }
         }
     }

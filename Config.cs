@@ -1,6 +1,6 @@
 ﻿namespace NETnogram; 
 
-public class Config {
+public struct Config {
     public int Width;
     public int Height;
     public int Checked;

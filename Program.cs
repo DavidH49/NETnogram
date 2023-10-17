@@ -4,26 +4,29 @@ using System.Collections.Generic;
 namespace NETnogram;
 
 internal class Program {
-    public Board Board = new Board(Config);
+    public readonly Board Board = new Board(Config);
     private static readonly Config Config = new Config {
-        Checked = 15,
+        Width = 5,
         Height = 5,
-        Width = 5
+        Checked = 15,
     };
 
 
     private static void Main(string[] args) {
         var program = new Program();
-        program.StartGame();
+        program.GameLoop();
     }
     
     
-    public void StartGame() {
-        PlayGame();
-    }
-    
-    
-    public void PlayGame() {
+    /// <summary>
+    /// Prints the current board,
+    /// asks the player which row and column they want to place their check,
+    /// check if the player has solved the nonogram,
+    /// repeat
+    ///
+    /// When lost: prints the solved board
+    /// </summary>
+    public void GameLoop() {
         while (true) {
             Console.Clear();
             Board.PrintBoard();
@@ -38,6 +41,8 @@ internal class Program {
 
             if (!Board[row, col]) {
                 Console.WriteLine("\nGame Over");
+                Console.WriteLine("\nThe solved board was:");
+                Board.PrintSolvedBoard();
                 break;
             }
 
@@ -49,7 +54,5 @@ internal class Program {
             }
         }
         
-        Console.WriteLine("\n\nThe solved board was:");
-        Board.PrintSolvedBoard();
     }
 }
