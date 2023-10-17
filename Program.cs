@@ -4,11 +4,11 @@ using System.Collections.Generic;
 namespace NETnogram;
 
 internal class Program {
-    public readonly Board Board = new Board(Config);
-    private static readonly Config Config = new Config {
+    public readonly Board Board = new(Config);
+    private static readonly Config Config = new() {
         Width = 5,
         Height = 5,
-        Checked = 15,
+        Checked = 25,
     };
 
 

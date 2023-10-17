@@ -3,29 +3,33 @@
 namespace NETnogram; 
 
 public class Board {
-    public bool[,] CheckedBoard;
+    // Public variables
+    public readonly bool[,] CheckedBoard;
     
-    private bool[,] _board;
-    private int[] _boardStatsRow;
-    private int[] _boardStatsCol;
-    private Config _config;
+    // Private variables
+    private readonly bool[,] _board;
+    private readonly int[] _boardStatsCol;
+    private readonly int[] _boardStatsRow;
+    private readonly Config _config;
+    private readonly Random _rng = new();
 
-    private Random _rng = new();
-
+    // Properties
     public bool this[int i, int j] => _board[i, j];
 
 
     /// <summary>
     /// If only a Config is specified, the Board class generates the board by itself
     /// </summary>
-    public Board(Config c) {
-        _config = c;
+    public Board(Config config) {
+        _config = config;
         
+        // Initialize the boards and the check counts
         _board = new bool[_config.Width, _config.Height];
         CheckedBoard = new bool[_config.Width, _config.Height];
         _boardStatsCol = new int[_config.Width];
         _boardStatsRow = new int[_config.Height];
         
+        // Generate the board and count it's checks
         MakeBoard();
         NumberBoard();
     }
@@ -35,14 +39,16 @@ public class Board {
     /// If a board is specified, the Board class only manages the interaction with
     /// and numbering of the specified board
     /// </summary>
-    public Board(Config c, bool[,] board) {
-        _config = c;
-        this._board = board;
+    public Board(Config config, bool[,] board) {
+        _config = config;
+        _board = board;
 
+        // Initialize the player's board and the check counts
         CheckedBoard = new bool[_config.Width, _config.Height];
-        _boardStatsCol = new int[_config.Width];
-        _boardStatsRow = new int[_config.Height];
+        _boardStatsCol = new int[_config.Height];
+        _boardStatsRow = new int[_config.Width];
         
+        // Count the checks
         NumberBoard();
     }
 
@@ -57,15 +63,24 @@ public class Board {
         Console.Write("    ");
         
         // Prints how many checks are in each column
-        for (int i = 0; i < _config.Height; i++) {
-            Console.Write(_boardStatsCol[i] + "  ");
+        for (int x = 0; x < _config.Height; x++) {
+            if (_boardStatsCol[x] == 0) {
+                Console.Write("   ");
+                continue;
+            }
+            
+            Console.Write(_boardStatsCol[x] + "  ");
         }
         
         Console.Write("\n");
         
         // Prints which fields of CheckedBoard are checked and how many checks there are in each row
         for (int y = 0; y < _config.Width; y++) {
-            Console.Write(_boardStatsRow[y] + "  ");
+            if (_boardStatsRow[y] == 0) {
+                Console.Write("   ");
+            } else {
+                Console.Write(_boardStatsRow[y] + "  ");
+            }
             
             for (int x = 0; x < _config.Height; x++) {
                 if (CheckedBoard[y, x]) {
@@ -106,7 +121,6 @@ public class Board {
     /// Checks if _board and CheckedBoard are equal
     /// to tell if the player has solved the nonogram
     /// </summary>
-    /// <returns></returns>
     public bool CheckBoardFinished() {
         for (int y = 0; y < _config.Width; y++) {
             for (int x = 0; x < _config.Height; x++) {
@@ -119,15 +133,24 @@ public class Board {
     
     
     /// <summary>
-    /// randomly sets up to _config.Checked fields in _board to true
+    /// Randomly sets _config.Checked many fields in _board to true
     /// </summary>
     private void MakeBoard() {
         // Place random checks
-        for (var i = 0; i < _config.Checked; i++) {
-            var y = _rng.Next(_config.Height);
-            var x = _rng.Next(_config.Width);
+        for (int i = 0; i < _config.Checked; i++) {
+            bool repeat;
+            int y;
+            int x;
+            
+            // Should fill the entire board if Checks = Width * Height, but doesn't work
+            do {
+                y = _rng.Next(_config.Height);
+                x = _rng.Next(_config.Width);
 
-            _board[y, x] = true;
+                repeat = _board[y, x];
+            } while (repeat);
+
+            _board[x, y] = true;
         }
     }
 
@@ -138,10 +161,10 @@ public class Board {
     private void NumberBoard() {
         for (int y = 0; y < _config.Height; y++) {
             for (int x = 0; x < _config.Width; x++) {
-                if (_board[y, x]) {
-                    _boardStatsRow[y]++;
-                    _boardStatsCol[x]++;
-                }
+                if (!_board[y, x]) continue;
+                
+                _boardStatsRow[y]++;
+                _boardStatsCol[x]++;
             }
         }
     }
