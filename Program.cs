@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NETnogram;
+﻿namespace NETnogram;
 
 internal class Program {
-    public readonly Board Board = new(Config);
+    private readonly Board _board = new(Config);
     private static readonly Config Config = new() {
         Width = 5,
         Height = 5,
@@ -23,36 +20,58 @@ internal class Program {
     /// asks the player which row and column they want to place their check,
     /// check if the player has solved the nonogram,
     /// repeat
-    ///
-    /// When lost: prints the solved board
     /// </summary>
-    public void GameLoop() {
+    private void GameLoop() {
         while (true) {
             Console.Clear();
-            Board.PrintBoard();
+            _board.PrintBoard();
 
-            Console.Write("\n");
-            
-            Console.WriteLine("Row: ");
-            int row = int.Parse(Console.ReadLine() ?? string.Empty);
-            
-            Console.WriteLine("Column: ");
-            int col = int.Parse(Console.ReadLine() ?? string.Empty);
+            var tile = GetTileInput();
 
-            if (!Board[row, col]) {
-                Console.WriteLine("\nGame Over");
-                Console.WriteLine("\nThe solved board was:");
-                Board.PrintSolvedBoard();
-                break;
+            try {
+                if (!_board[tile.y, tile.x]) {
+                    EndGameFailed();
+                    break;
+                }
+            } catch (IndexOutOfRangeException) {
+                Console.WriteLine("Your row or column was out of range!");
+                continue;
             }
+            
+            _board.CheckedBoard[tile.Item1, tile.Item2] = true;
 
-            Board.CheckedBoard[row, col] = true;
-
-            if (Board.CheckBoardFinished()) {
-                Console.WriteLine("\nYou won!");
+            if (_board.CheckBoardFinished()) {
+                EndGameSolved();
                 break;
             }
         }
-        
+    }
+
+
+    private void EndGameFailed() {
+        Console.WriteLine("\nGame Over");
+        Console.WriteLine("\nThe solved board was:");
+        _board.PrintSolvedBoard();
+    }
+
+
+    private void EndGameSolved() {
+        Console.WriteLine("\nYou won!");
+    }
+    
+    
+    /// <summary>
+    /// Asks the player for the row and column they want to place their check in
+    /// </summary>
+    private (int y, int x) GetTileInput() {
+        Console.Write("\n");
+            
+        Console.WriteLine("Row: ");
+        int row = int.Parse(Console.ReadLine() ?? string.Empty);
+            
+        Console.WriteLine("Column: ");
+        int col = int.Parse(Console.ReadLine() ?? string.Empty);
+
+        return (row, col);
     }
 }

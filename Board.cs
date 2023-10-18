@@ -1,6 +1,4 @@
-﻿using static System.Random;
-
-namespace NETnogram; 
+﻿namespace NETnogram; 
 
 public class Board {
     // Public variables
@@ -52,7 +50,60 @@ public class Board {
         NumberBoard();
     }
 
+    
+    /// <summary>
+    /// Checks if _board and CheckedBoard are equal
+    /// to tell if the player has solved the nonogram
+    /// </summary>
+    public bool CheckBoardFinished() {
+        for (int y = 0; y < _config.Width; y++) {
+            for (int x = 0; x < _config.Height; x++) {
+                if (_board[y, x] != CheckedBoard[y, x]) return false;
+            }
+        }
 
+        return true;
+    }
+
+    
+    /// <summary>
+    /// Randomly sets _config.Checked many tiles in _board to true
+    /// </summary>
+    private void MakeBoard() {
+        // Place random checks
+        for (int i = 0; i < _config.Checked; i++) {
+            bool repeat;
+            int y;
+            int x;
+            
+            // Should fill the entire board if Checks = Width * Height, but doesn't work
+            do {
+                y = _rng.Next(_config.Height);
+                x = _rng.Next(_config.Width);
+
+                repeat = _board[y, x];
+            } while (repeat);
+
+            _board[x, y] = true;
+        }
+    }
+
+
+    /// <summary>
+    /// Counts how many checks there are in each row and column
+    /// </summary>
+    private void NumberBoard() {
+        for (int y = 0; y < _config.Height; y++) {
+            for (int x = 0; x < _config.Width; x++) {
+                if (!_board[y, x]) continue;
+                
+                _boardStatsRow[y]++;
+                _boardStatsCol[x]++;
+            }
+        }
+    }
+    
+    
     /// <summary>
     /// Iterates through CheckedBoard,
     /// prints how many checks are in each row and column,
@@ -74,7 +125,7 @@ public class Board {
         
         Console.Write("\n");
         
-        // Prints which fields of CheckedBoard are checked and how many checks there are in each row
+        // Prints which tiles of CheckedBoard are checked and how many checks there are in each row
         for (int y = 0; y < _config.Width; y++) {
             if (_boardStatsRow[y] == 0) {
                 Console.Write("   ");
@@ -113,59 +164,6 @@ public class Board {
             }
             
             Console.Write("\n");
-        }
-    }
-
-
-    /// <summary>
-    /// Checks if _board and CheckedBoard are equal
-    /// to tell if the player has solved the nonogram
-    /// </summary>
-    public bool CheckBoardFinished() {
-        for (int y = 0; y < _config.Width; y++) {
-            for (int x = 0; x < _config.Height; x++) {
-                if (_board[y, x] != CheckedBoard[y, x]) return false;
-            }
-        }
-
-        return true;
-    }
-    
-    
-    /// <summary>
-    /// Randomly sets _config.Checked many fields in _board to true
-    /// </summary>
-    private void MakeBoard() {
-        // Place random checks
-        for (int i = 0; i < _config.Checked; i++) {
-            bool repeat;
-            int y;
-            int x;
-            
-            // Should fill the entire board if Checks = Width * Height, but doesn't work
-            do {
-                y = _rng.Next(_config.Height);
-                x = _rng.Next(_config.Width);
-
-                repeat = _board[y, x];
-            } while (repeat);
-
-            _board[x, y] = true;
-        }
-    }
-
-
-    /// <summary>
-    /// Counts how many checks there are in each row and column
-    /// </summary>
-    private void NumberBoard() {
-        for (int y = 0; y < _config.Height; y++) {
-            for (int x = 0; x < _config.Width; x++) {
-                if (!_board[y, x]) continue;
-                
-                _boardStatsRow[y]++;
-                _boardStatsCol[x]++;
-            }
         }
     }
 }
