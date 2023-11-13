@@ -1,12 +1,8 @@
 ﻿namespace NETnogram;
 
 internal class Program {
-    private readonly Board _board = new(Config);
-    private static readonly Config Config = new() {
-        Width = 5,
-        Height = 5,
-        Checked = 25,
-    };
+    private readonly GameBoard _gameBoard = new(Config);
+    private static readonly Config Config = new(10, 5, 4);
 
 
     private static void Main(string[] args) {
@@ -24,12 +20,12 @@ internal class Program {
     private void GameLoop() {
         while (true) {
             Console.Clear();
-            _board.PrintBoard();
+            _gameBoard.PrintBoard();
 
-            var tile = GetTileInput();
+            var tileInput = GetTileInput();
 
             try {
-                if (!_board[tile.y, tile.x]) {
+                if (!_gameBoard[tileInput]) {
                     EndGameFailed();
                     break;
                 }
@@ -38,9 +34,9 @@ internal class Program {
                 continue;
             }
             
-            _board.CheckedBoard[tile.Item1, tile.Item2] = true;
+            _gameBoard.PlayerBoard[tileInput] = true;
 
-            if (_board.CheckBoardFinished()) {
+            if (_gameBoard.CheckBoardFinished()) {
                 EndGameSolved();
                 break;
             }
@@ -51,7 +47,7 @@ internal class Program {
     private void EndGameFailed() {
         Console.WriteLine("\nGame Over");
         Console.WriteLine("\nThe solved board was:");
-        _board.PrintSolvedBoard();
+        _gameBoard.PrintSolvedBoard();
     }
 
 
@@ -63,15 +59,15 @@ internal class Program {
     /// <summary>
     /// Asks the player for the row and column they want to place their check in
     /// </summary>
-    private (int y, int x) GetTileInput() {
+    private Point GetTileInput() {
         Console.Write("\n");
             
         Console.WriteLine("Row: ");
-        int row = int.Parse(Console.ReadLine() ?? string.Empty);
+        var y = int.Parse(Console.ReadLine() ?? "-1");
             
         Console.WriteLine("Column: ");
-        int col = int.Parse(Console.ReadLine() ?? string.Empty);
+        var x = int.Parse(Console.ReadLine() ?? "-1");
 
-        return (row, col);
+        return new Point(y, x);
     }
 }
