@@ -1,4 +1,6 @@
-﻿namespace NETnogram;
+﻿using static System.Console;
+
+namespace NETnogram;
 
 internal class Program {
     private readonly GameBoard _gameBoard = new(Config);
@@ -9,8 +11,8 @@ internal class Program {
         var program = new Program();
         program.GameLoop();
     }
-    
-    
+
+
     /// <summary>
     /// Prints the current board,
     /// asks the player which row and column they want to place their check,
@@ -19,7 +21,7 @@ internal class Program {
     /// </summary>
     private void GameLoop() {
         while (true) {
-            Console.Clear();
+            Clear();
             _gameBoard.PrintBoard();
 
             var tileInput = GetTileInput();
@@ -30,11 +32,11 @@ internal class Program {
                     break;
                 }
             }
-            
+
             catch (IndexOutOfRangeException) {
                 continue;
             }
-            
+
             _gameBoard.PlayerBoard[tileInput] = true;
 
             if (_gameBoard.CheckBoardFinished()) {
@@ -46,29 +48,29 @@ internal class Program {
 
 
     private void EndGameFailed() {
-        Console.WriteLine("\nGame Over");
-        Console.WriteLine("\nThe solved board was:");
+        WriteLine("\nGame Over");
+        WriteLine("\nThe solved board was:");
         _gameBoard.PrintSolvedBoard();
     }
 
 
     private void EndGameSolved() {
-        Console.WriteLine("\nYou won!");
+        WriteLine("\nYou won!");
     }
-    
-    
+
+
     /// <summary>
     /// Asks the player for the row and column they want to place their check in
     /// </summary>
     private Point GetTileInput() {
-        Console.Write("\n");
-        
-        try {
-            Console.WriteLine("Row: ");
-            var y = int.Parse(Console.ReadLine() ?? "-1");
+        Write("\n");
 
-            Console.WriteLine("Column: ");
-            var x = int.Parse(Console.ReadLine() ?? "-1");
+        try {
+            WriteLine("Row: ");
+            var y = int.Parse(ReadLine() ?? "-1");
+
+            WriteLine("Column: ");
+            var x = int.Parse(ReadLine() ?? "-1");
 
             return new Point(y, x);
         }

@@ -1,8 +1,6 @@
-﻿using System.Collections;
+﻿namespace NETnogram;
 
-namespace NETnogram; 
-
-public struct Board {
+internal struct Board {
     private bool[,] _board;
 
     public bool[,] BoardArray => _board;

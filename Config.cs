@@ -1,6 +1,6 @@
-﻿namespace NETnogram; 
+﻿namespace NETnogram;
 
-public readonly struct Config {
+internal readonly struct Config {
     public readonly int Width;
     public readonly int Height;
     public readonly int TilesChecked;

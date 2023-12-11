@@ -1,6 +1,6 @@
-﻿namespace NETnogram; 
+﻿namespace NETnogram;
 
-public readonly struct Point {
+internal readonly struct Point {
     public readonly int Y;
     public readonly int X;
 
