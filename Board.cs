@@ -1,7 +1,11 @@
-﻿namespace NETnogram; 
+﻿using System.Collections;
+
+namespace NETnogram; 
 
 public struct Board {
     private bool[,] _board;
+
+    public bool[,] BoardArray => _board;
 
     public bool this[Point x] {
         get => _board[x.Y, x.X];

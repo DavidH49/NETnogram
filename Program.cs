@@ -2,7 +2,7 @@
 
 internal class Program {
     private readonly GameBoard _gameBoard = new(Config);
-    private static readonly Config Config = new(10, 5, 4);
+    private static readonly Config Config = new(5, 5, 15);
 
 
     private static void Main(string[] args) {
@@ -29,8 +29,9 @@ internal class Program {
                     EndGameFailed();
                     break;
                 }
-            } catch (IndexOutOfRangeException) {
-                Console.WriteLine("Your row or column was out of range!");
+            }
+            
+            catch (IndexOutOfRangeException) {
                 continue;
             }
             
@@ -61,13 +62,19 @@ internal class Program {
     /// </summary>
     private Point GetTileInput() {
         Console.Write("\n");
-            
-        Console.WriteLine("Row: ");
-        var y = int.Parse(Console.ReadLine() ?? "-1");
-            
-        Console.WriteLine("Column: ");
-        var x = int.Parse(Console.ReadLine() ?? "-1");
+        
+        try {
+            Console.WriteLine("Row: ");
+            var y = int.Parse(Console.ReadLine() ?? "-1");
 
-        return new Point(y, x);
+            Console.WriteLine("Column: ");
+            var x = int.Parse(Console.ReadLine() ?? "-1");
+
+            return new Point(y, x);
+        }
+
+        catch (FormatException) {
+            return new Point(-1, -1);
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace NETnogram; 
+﻿using System.Drawing;
+
+namespace NETnogram; 
 
 public class GameBoard {
     // Public variables
@@ -6,8 +8,8 @@ public class GameBoard {
     
     // Private variables
     private Board _board;
-    private readonly int[] _boardStatsCol;
-    private readonly int[] _boardStatsRow;
+    private readonly string[] _boardStatsCol;
+    private readonly string[] _boardStatsRow;
     private readonly Config _config;
     private readonly Random _rng = new();
 
@@ -19,17 +21,21 @@ public class GameBoard {
     /// If only a Config is specified, the Board class generates the board by itself
     /// </summary>
     public GameBoard(Config config) {
+        if ((config.Width * config.Height) < config.TilesChecked) {
+            throw new ArgumentException("There are more checked tiles than tiles on the board.");
+        }
+
         _config = config;
         
         // Initialize the boards and the check counts
         _board = new Board(_config);
         PlayerBoard = new Board(_config);
-        _boardStatsCol = new int[_config.Width];
-        _boardStatsRow = new int[_config.Height];
+        _boardStatsCol = new string[_config.Width];
         
         // Generate the board and count it's checks
         GenerateBoard();
-        CountChecksOnBoard();
+        _boardStatsRow = CountHorizontalChecks();
+        _boardStatsCol = CountVerticalChecks();
     }
     
     
@@ -43,11 +49,11 @@ public class GameBoard {
 
         // Initialize the player's board and the check counts
         PlayerBoard = new Board(_config);
-        _boardStatsCol = new int[_config.Width];
-        _boardStatsRow = new int[_config.Height];
+        _boardStatsCol = new string[_config.Width];
         
         // Count the checks
-        CountChecksOnBoard();
+        _boardStatsRow = CountHorizontalChecks();
+        _boardStatsCol = CountVerticalChecks();
     }
 
     
@@ -56,8 +62,8 @@ public class GameBoard {
     /// to tell if the player has solved the nonogram
     /// </summary>
     public bool CheckBoardFinished() {
-        for (int y = 0; y < _config.Height; y++) {
-            for (int x = 0; x < _config.Width; x++) {
+        for (var y = 0; y < _config.Height; y++) {
+            for (var x = 0; x < _config.Width; x++) {
                 if (_board[y, x] != PlayerBoard[y, x]) return false;
             }
         }
@@ -71,7 +77,7 @@ public class GameBoard {
     /// </summary>
     private void GenerateBoard() {
         // Place random checks
-        for (int i = 0; i < _config.TilesChecked; i++) {
+        for (var i = 0; i < _config.TilesChecked; i++) {
             bool repeat;
             Point p;
             
@@ -90,17 +96,76 @@ public class GameBoard {
 
 
     /// <summary>
-    /// Counts how many checks there are in each row and column
+    /// Unholy method to count how many checks there are in each row
     /// </summary>
-    private void CountChecksOnBoard() {
-        for (int y = 0; y < _config.Height; y++) {
-            for (int x = 0; x < _config.Width; x++) {
-                if (!_board[y, x]) continue;
-                
-                _boardStatsRow[y]++;
-                _boardStatsCol[x]++;
+    private string[] CountHorizontalChecks() {
+        string[] horiArr = new string[_config.Height];
+
+        // Horizontal
+        for (var y=0; y<_config.Height; y++) {
+            var rowStr = "";
+            var i = 0;
+
+            for (var x=0; x<_config.Width; x++) {
+                if (_board[y, x]) {
+                    i++;
+                } else {
+                    rowStr += i > 0 ? i + " " : "";
+                    i = 0;
+                }
+
+                if (x == _config.Width) {
+                    rowStr += i;
+                }
+            }
+
+            rowStr += i > 0 ? i : "";
+            horiArr[y] = rowStr;
+        }
+
+        // Get how long the longest string in the array is
+        var lastLen = 0;
+        foreach (var horiStr in horiArr) {
+            lastLen = Math.Max(lastLen, horiStr.Length);
+        }
+
+        // Add whitespaces to make all strings equally long
+        for (var i = 0; i < horiArr.Length; i++) {
+            if (horiArr[i].Length < lastLen) {
+                var lenDiff = lastLen - horiArr[i].Length;
+
+                for (int j = 0; j < lenDiff; j++) {
+                    horiArr[i] += " ";
+                }
             }
         }
+
+        return horiArr;
+    }
+
+
+    private string[] CountVerticalChecks() {
+        string[] vertArr = new string[_config.Width];
+
+        for (var x=0; x<_config.Width; x++) {
+            var colStr = "";
+            var i = 0;
+
+            for (var y= 0; y<_config.Height; ++y) {
+                if (_board[y, x]) {
+                    i++;
+                } else {
+                    colStr += i > 0 ? i : "";
+                    i = 0;
+                    continue;
+                }
+            }
+
+            colStr += i > 0 ? i : "";
+            vertArr[x] = colStr;
+        }
+
+        return vertArr;
     }
     
     
@@ -111,25 +176,11 @@ public class GameBoard {
     /// and every true as " O "
     /// </summary>
     public void PrintBoard() {
-        Console.Write("    ");
-        
-        // Prints how many checks are in each column
-        for (int x = 0; x < _config.Width; x++) {
-            if (_boardStatsCol[x] == 0) {
-                Console.Write("   ");
-                continue;
-            }
-            
-            Console.Write(_boardStatsCol[x] + "  ");
-        }
-        
-        Console.Write("\n");
-        
         // Prints which tiles of PlayerBoard are checked and how many checks there are in each row
-        for (int y = 0; y < _config.Height; y++) {
+        for (var y = 0; y < _config.Height; y++) {
             Console.Write(_boardStatsRow[y] + "  ");
 
-            for (int x = 0; x < _config.Width; x++) {
+            for (var x = 0; x < _config.Width; x++) {
                 if (PlayerBoard[y, x]) {
                     Console.Write(" O ");
                     continue;
@@ -149,8 +200,8 @@ public class GameBoard {
     /// and every true as " O "
     /// </summary>
     public void PrintSolvedBoard() {
-        for (int y = 0; y < _config.Height; y++) {
-            for (int x = 0; x < _config.Width; x++) {
+        for (var y = 0; y < _config.Height; y++) {
+            for (var x = 0; x < _config.Width; x++) {
                 if (_board[y, x]) {
                     Console.Write(" O ");
                     continue;
