@@ -21,9 +21,6 @@ internal class GameBoard {
     /// If only a Config is specified, the Board class generates the board by itself
     /// </summary>
     public GameBoard(Config config) {
-        if ((config.Width * config.Height) < config.TilesChecked) {
-            throw new ArgumentException("There are more checked tiles than tiles on the board.");
-        }
 
         _config = config;
 
@@ -202,7 +199,7 @@ internal class GameBoard {
             var colStr = new string(' ', _boardStatsRow[0].Length + 2);
 
             for (var x = 0; x < _config.Width; x++) {
-                colStr += $" {_boardStatsCol[x][y]} ";
+                colStr += $" {_boardStatsCol[x][y]}";
             }
 
             WriteLine(colStr);
@@ -216,11 +213,11 @@ internal class GameBoard {
 
             for (var x = 0; x < _config.Width; x++) {
                 if (PlayerBoard[y, x]) {
-                    Write(" O ");
+                    Write(" O");
                     continue;
                 }
 
-                Write(" - ");
+                Write(" -");
             }
 
             Write("\n");

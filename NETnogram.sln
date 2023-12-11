@@ -5,8 +5,6 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETnogram", "NETnogram.csproj", "{0C5FB323-C1F4-4FCA-94A3-FCE9B0A008F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestNetnogram", "..\TestNetnogram\TestNetnogram.csproj", "{8F591727-A8BA-44EE-92AB-966881E7AC7B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{0C5FB323-C1F4-4FCA-94A3-FCE9B0A008F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C5FB323-C1F4-4FCA-94A3-FCE9B0A008F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C5FB323-C1F4-4FCA-94A3-FCE9B0A008F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F591727-A8BA-44EE-92AB-966881E7AC7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F591727-A8BA-44EE-92AB-966881E7AC7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F591727-A8BA-44EE-92AB-966881E7AC7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F591727-A8BA-44EE-92AB-966881E7AC7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
